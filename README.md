@@ -1,38 +1,40 @@
-Role Name
+Realtek Fix
 =========
+This is the ansible role to fix the realtek driver issue on proxmox. This role will install the realtek driver version 8168 instead of the 8169 driver on the proxmox host and will fix the issue of realtek causing intermittent issues.
 
-A brief description of the role goes here.
+Specifically, this role will do the following:
+- Update repositories to include non-free and non-free-updates ( if set to proxmox_subscription: false ) otherwise you will need to sort the repositories yourself
+- Install pve-headers
+- Install the realtek driver 8168
+- Blacklist the 8169 driver
+- Update grub parameters for the realtek driver
+- Reboot the proxmox host
 
 Requirements
 ------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role was tested on proxmox 8.0 but should work on any proxmox version as it is not a proxmox specific role. 
 
 Role Variables
 --------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The only variable we set is `proxmox_subscription: false` which will update the repositories to include non-free and non-free-updates. If you have a proxmox subscription, you can set this to true and it will not update the repositories.
 
 Dependencies
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+none
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+```yaml
+- name: realtek.yml
+  hosts: proxmox
+  gather_facts: true
+  vars_prompt: 
+  - name: "ansible_password"
+    prompt: "Enter the remote password"
+    private: yes
+  vars: 
+    ansible_user: root
+  tasks:
+  - import_role:
+      name: realtek-fix
+```
