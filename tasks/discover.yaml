@@ -1,5 +1,5 @@
 - name: Get PCI device information
-  shell: "lspci -k | grep -E '8168|Realtek' | grep 'Kernel driver in use' | awk -F ' ' '{print $NF}'"
+  shell: "lspci -k | grep -A2 -E '8168|Realtek' | grep 'Kernel driver in use' | awk -F ' ' '{print $NF}'"
   register: pci_devices
   changed_when: false
 - name: baseline realtek_nic_present
