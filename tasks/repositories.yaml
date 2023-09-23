@@ -21,3 +21,4 @@
 - name: Update APT package cache
   ansible.builtin.apt:
     update_cache: yes
+  changed_when: false
