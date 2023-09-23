@@ -1,0 +1,23 @@
+- name: Add Debian package repository (main)
+  ansible.builtin.apt_repository:
+    repo: deb http://ftp.us.debian.org/debian bookworm main contrib non-free non-free-firmware
+    state: present
+
+- name: Add Debian package repository (updates)
+  ansible.builtin.apt_repository:
+    repo: deb http://ftp.us.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+    state: present
+
+- name: Add Debian package repository (security)
+  ansible.builtin.apt_repository:
+    repo: deb http://security.debian.org bookworm-security main contrib non-free non-free-firmware
+    state: present
+
+- name: Add Proxmox package repository
+  ansible.builtin.apt_repository:
+    repo: deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+    state: present
+
+- name: Update APT package cache
+  ansible.builtin.apt:
+    update_cache: yes

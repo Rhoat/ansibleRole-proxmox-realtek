@@ -1,0 +1,11 @@
+- name: Get PCI device information
+  command: lspci -k | grep -A 2 -E "8168|Realtek" | grep "Kernel driver in use" |awk -F " " '{print $NF}'
+  register: pci_devices
+  changed_when: false
+- name: baseline realtek_nic_present
+  set_fact:
+    realtek_nic_present: false
+- name: Check for Realtek NIC
+  set_fact:
+    realtek_nic_present: true
+  when: pci_devices.stdout.find('r8169') != -1

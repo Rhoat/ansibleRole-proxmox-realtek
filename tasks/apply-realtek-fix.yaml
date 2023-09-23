@@ -1,0 +1,40 @@
+- name: Update APT package cache
+  ansible.builtin.apt:
+    update_cache: yes
+- name: Install pve-headers package
+  ansible.builtin.apt:
+    name: pve-headers
+    state: present
+    update_cache: yes
+- name: Install r8168-dkms package
+  ansible.builtin.apt:
+    name: r8168-dkms
+    state: present
+    update_cache: yes
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+- name: Ensure desired GRUB parameters are set
+  register: grub_parameters
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX='
+    line: 'GRUB_CMDLINE_LINUX="r8168.aspm=0 r8168.eee_enable=0 pcie_aspm=off loglevel=3"'
+    state: present
+- name: Update GRUB configuration
+  command: update-grub
+  async: 3600
+  poll: 0
+  ignore_errors: yes
+  when: grub_parameters.changed
+
+- name: Refresh Proxmox boot configuration
+  command: proxmox-boot-tool refresh
+  when: grub_parameters.changed
+- name: Reboot the system
+  command: reboot -n
+  async: 3600
+  poll: 0
+  when: grub_parameters.changed

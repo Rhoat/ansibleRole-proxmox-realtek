@@ -1,0 +1,9 @@
+---
+# tasks file 
+- include_tasks: repositories.yaml
+  when: proxmox_subscription == false
+- include_tasks: discover.yaml
+- debug:
+    var: realtek_nic_present
+- include_tasks: apply-realtek-fix.yaml
+  when: realtek_nic_present == true
